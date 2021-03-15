@@ -1,0 +1,26 @@
+﻿<div class="alert alert-success alert-dismissible fade @Visible" role="alert">
+    <strong>@Message</strong>
+    <button type="button" class="close" aria-label="Close" @onclick="() => { Visible = string.Empty; }">
+        <span aria-hidden="true">&times;</span>
+    </button>
+</div>
+
+@code {
+    [Parameter]
+    public string Message { get; set; }
+    [Parameter]
+    public bool Show { get; set; }
+
+
+    string Visible;
+
+    protected override void OnParametersSet()
+    {
+        Visible = Show switch
+        {
+            true => "show",
+            _ => "hidden"
+        };
+    }
+
+}

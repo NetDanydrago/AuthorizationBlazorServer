@@ -1,0 +1,71 @@
+﻿@page "/identityserver4/remove/identityresource"
+@inject HttpClient HttpClient
+<Popper Show="@ShowPopper" Message="@Message" />
+<div class="container">
+    <div class="container">
+        <table class="table">
+            <thead class="thead-dark">
+                <tr>
+                    <th scope="col">Nombre</th>
+                    <th scope="col">Nombre a mostrar</th>
+                    <th scope="col">Accion</th>
+                </tr>
+            </thead>
+            <tbody>
+
+                @foreach (var identity in Identitys)
+                {
+                    <tr>
+                        <td>@identity.Name</td>
+                        <td>@identity.DisplayName</td>
+                        <td>
+                            <button class="btn btn-danger"
+                                    @onclick="() => DeleteIdentityScope(identity.Name)">
+                                Eliminar
+                            </button>
+                        </td>
+                    </tr>
+                }
+                  
+                </tbody>
+        </table>
+    </div>
+</div>
+@code {
+
+    string Message = string.Empty;
+
+    bool ShowPopper;
+
+
+
+    List<IdentityResourceViewModel> Identitys = new List<IdentityResourceViewModel>();
+
+    protected async override Task OnInitializedAsync()
+    {
+        Identitys = await HttpClient.GetFromJsonAsync<List<IdentityResourceViewModel>>("api/identityserver/IdentityResource");
+    }
+
+    public async void DeleteIdentityScope(string name)
+    {
+        var Response = await HttpClient.DeleteAsync($"api/identityserver/IdentityResource/{name}");
+        if (Response.IsSuccessStatusCode)
+        {
+            await SuccessPopper("Se elimino correctamente el permiso");
+            Identitys = await HttpClient.GetFromJsonAsync<List<IdentityResourceViewModel>>("api/identityserver/IdentityResource");
+            StateHasChanged();
+        }
+    }
+
+
+    private async Task SuccessPopper(string message)
+    {
+        Message = message;
+        ShowPopper = true;
+        StateHasChanged();
+        await Task.Delay(3000);
+        ShowPopper = false;
+        StateHasChanged();
+    }
+
+}

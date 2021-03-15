@@ -1,0 +1,77 @@
+﻿@page "/identityserver4/register/identityresource"
+@inject HttpClient HttpClient
+@inject NavigationManager Navigation
+<Popper Show="@ShowPopper" Message="@Message" />
+<div class="container">
+    <div class="card">
+        <div class="card-header">
+            Registra Permiso de Identidad
+            <button class="btn btn-success" @onclick="Navigate" style="margin-left:50%">
+                Ver Permisos
+            </button>
+        </div>
+        <div class="card-body">
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label for="IdentityName">Nombre del permiso</label>
+                        <input class="form-control" @bind="Identity.Name" id="IdentityName">
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label for="IdentityDisplayName">Nombre a mostrar del permiso</label>
+                        <input class="form-control" @bind="Identity.DisplayName" id="IdentityDisplayName">
+                    </div>
+                    <div class="form-group col-md-12 ">
+                        <label for="Claim">Claim del Usuario</label>
+                        <input class="form-control" @bind="Identity.Claim" id="Claim">
+                    </div>
+                </div>
+                <button  class="btn btn-primary" @onclick="RegisterIdentityScope">Registrar</button>
+                <button  class="btn btn-warning" style="margin-left: 50%" 
+                        @onclick="RegisterDefaultOpenId"> Registrar Permisos de OpenId</button>
+
+</div>
+    </div>
+</div>
+@code {
+
+    string Message = string.Empty;
+
+    bool ShowPopper;
+
+    IdentityResourceViewModel Identity = new IdentityResourceViewModel();
+
+    public async void RegisterIdentityScope()
+    {
+        var Response =  await HttpClient.PostAsJsonAsync
+            <IdentityResourceViewModel>("api/identityserver/IdentityResource", Identity);
+        if (Response.IsSuccessStatusCode)
+        {
+            await SuccessPopper("Se registro correctamente el permiso");
+        }
+    }
+
+    public async void RegisterDefaultOpenId()
+    {
+        var Response = await HttpClient.PostAsync("api/identityserver", null);
+        if (Response.IsSuccessStatusCode)
+        {
+            await SuccessPopper("Se registro correctamente los scope de OpenId");
+        }
+    }
+
+    private async Task SuccessPopper(string message)
+    {
+        Message = message;
+        ShowPopper = true;
+        StateHasChanged();
+        await Task.Delay(3000);
+        ShowPopper = false;
+        StateHasChanged();
+    }
+
+    private void Navigate()
+    {
+        Navigation.NavigateTo("identityserver4/remove/identityresource");
+    }
+
+}

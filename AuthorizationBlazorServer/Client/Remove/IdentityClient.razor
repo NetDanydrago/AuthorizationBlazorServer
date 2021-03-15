@@ -1,0 +1,63 @@
+﻿@page "/identityserver4/remove/client"
+@inject HttpClient HttpClient
+<Popper Show="@ShowPopper"  Message="@Message"/>
+<div class="container">
+    <div class="container">
+        <table class="table">
+            <thead class="thead-dark">
+                <tr>
+                    <th scope="col">Nombre</th>
+                    <th scope="col">Accion</th>
+                </tr>
+            </thead>
+            <tbody>
+
+                @foreach (var Client in ClientApps)
+                {
+                <tr>
+                    <td>@Client.Name</td>
+                    <td>
+                        <button class="btn btn-danger"
+                           @onclick="() => DeleteClient(Client.Name)">Eliminar</button>
+                    </td>
+                </tr>
+                 }
+                </tbody>
+        </table>
+    </div>
+</div>
+@code {
+
+    List<ClientViewModel> ClientApps = new List<ClientViewModel>();
+
+    string Message = string.Empty;
+
+    bool ShowPopper;
+
+    protected async override Task OnInitializedAsync()
+    {
+        ClientApps = await HttpClient.GetFromJsonAsync<List<ClientViewModel>>("api/identityserver/Client");
+    }
+
+    async void DeleteClient( string clientid)
+    {
+        var Response = await HttpClient.DeleteAsync($"api/identityserver/client/{clientid}");
+        if (Response.IsSuccessStatusCode)
+        {
+            await SuccessPopper("Se elimino el cliente correctamente");
+            ClientApps = await HttpClient.GetFromJsonAsync<List<ClientViewModel>>("api/identityserver/Client");
+            StateHasChanged();
+        }
+    }
+
+    private async Task SuccessPopper(string message)
+    {
+        Message = message;
+        ShowPopper = true;
+        StateHasChanged();
+        await Task.Delay(3000);
+        ShowPopper = false;
+        StateHasChanged();
+    }
+
+}

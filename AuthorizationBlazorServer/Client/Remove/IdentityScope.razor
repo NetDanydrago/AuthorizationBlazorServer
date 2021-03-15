@@ -1,0 +1,68 @@
+﻿@page "/identityserver4/remove/apiscope"
+@inject HttpClient HttpClient
+<Popper Show="@ShowPopper" Message="@Message" />
+<div class="container">
+   <table class="table">
+        <thead class="thead-dark">
+            <tr>
+                <th scope="col">Nombre</th>
+                <th scope="col">Nombre a mostrar</th>
+                <th scope="col">Accion</th>
+            </tr>
+        </thead>
+        <tbody>
+
+            @foreach (var Scope in Scopes)
+            {
+                <tr>
+                    <td>@Scope.Name</td>
+                    <td>@Scope.DisplayName</td>
+                    <td>
+                        <button class="btn btn-danger"
+                                @onclick="() => DeleteScope(Scope.Name)">
+                            Eliminar
+                        </button>
+                    </td>
+                </tr>
+             }
+            </tbody>
+    </table>
+</div>
+
+@code {
+
+    string Message = string.Empty;
+
+    bool ShowPopper;
+
+    List<ScopeViewModel> Scopes = new List<ScopeViewModel>();
+
+    protected async override Task OnInitializedAsync()
+    {
+        Scopes = await HttpClient.GetFromJsonAsync<List<ScopeViewModel>>("api/identityserver/ApiScope");
+    }
+
+
+    public async void DeleteScope(string name)
+    {
+        var Response = await HttpClient.DeleteAsync($"api/identityserver/ApiScope/{name}");
+        if (Response.IsSuccessStatusCode)
+        {
+            await SuccessPopper("Se elimino el permiso correctamente");
+            Scopes = await HttpClient.GetFromJsonAsync<List<ScopeViewModel>>("api/identityserver/ApiScope");
+            StateHasChanged();
+        }
+    }
+
+
+
+    private async Task SuccessPopper(string message)
+    {
+        Message = message;
+        ShowPopper = true;
+        StateHasChanged();
+        await Task.Delay(3000);
+        ShowPopper = false;
+        StateHasChanged();
+    }
+}

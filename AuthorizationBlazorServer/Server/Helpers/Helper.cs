@@ -20,7 +20,7 @@ namespace AuthorizationBlazorServer.Server.Helpers
                 Flows.ResourceOwnerPassword => GrantTypes.ResourceOwnerPassword,
                 Flows.ResourceOwnerPasswordAndClientCredentials => GrantTypes.ResourceOwnerPasswordAndClientCredentials,
                 Flows.Code => GrantTypes.Code,
-                Flows.ClientCredentials => GrantTypes.ClientCredentials
+                _ => GrantTypes.ClientCredentials
             };
             return Type;
         }

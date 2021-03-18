@@ -13,10 +13,10 @@ namespace AuthorizationBlazorServer.Server.Services
     /// </summary>
     public class UserResourceOwnerPasswordValidator : IResourceOwnerPasswordValidator
     {
-        private readonly UserStore Users;
+        private readonly UserContext Users;
         private readonly ISystemClock Clock;
 
-        public UserResourceOwnerPasswordValidator(UserStore users, ISystemClock clock)
+        public UserResourceOwnerPasswordValidator(UserContext users, ISystemClock clock)
         {
             Users = users;
             Clock = clock;

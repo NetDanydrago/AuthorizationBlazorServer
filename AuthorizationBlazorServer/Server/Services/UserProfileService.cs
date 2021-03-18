@@ -13,9 +13,9 @@ namespace AuthorizationBlazorServer.Server.Services
     {
         protected readonly ILogger Logger;
 
-        protected readonly UserStore Users;
+        protected readonly UserContext Users;
 
-        public UserProfileService(UserStore users, ILogger<UserProfileService> logger)
+        public UserProfileService(UserContext users, ILogger<UserProfileService> logger)
         {
             Users = users;
             Logger = logger;

@@ -17,7 +17,7 @@ namespace AuthorizationBlazorServer.Server.Services
         /// <returns></returns>
         public static IIdentityServerBuilder AddUsers(this IIdentityServerBuilder builder, Action<DbContextOptionsBuilder> options)
         {
-            builder.Services.AddDbContext<UserStore>(options);
+            builder.Services.AddDbContext<UserContext>(options);
             builder.AddProfileService<UserProfileService>();
             builder.AddResourceOwnerValidator<UserResourceOwnerPasswordValidator>();
 

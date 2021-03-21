@@ -23,5 +23,6 @@ namespace AuthorizationBlazorServer.Server.Services
         [NotMapped]
         public ICollection<Claim> Claims { get; set; } = new HashSet<Claim>(new ClaimComparer());
 
+
     }
 }

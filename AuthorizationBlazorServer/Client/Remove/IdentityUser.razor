@@ -48,7 +48,7 @@
         if (Response.IsSuccessStatusCode)
         {
             await SuccessPopper("Se elimino el cliente correctamente");
-            Users = await HttpClient.GetFromJsonAsync<List<UserViewModel>>("api/identityserver/Client");
+            Users = await HttpClient.GetFromJsonAsync<List<UserViewModel>>("api/identity/users");
             StateHasChanged();
         }
     }

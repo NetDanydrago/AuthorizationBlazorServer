@@ -36,7 +36,6 @@ namespace AuthorizationBlazorServer.Server.Services
                 if(User != null)
                 {
                     context.AddRequestedClaims(User.Claims);
-
                 }
                 context.LogIssuedClaims(Logger);
             }

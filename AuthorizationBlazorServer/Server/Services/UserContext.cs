@@ -43,16 +43,24 @@ namespace AuthorizationBlazorServer.Server.Services
         public User FindByUserId(string id)
         {
             var User = Users.FirstOrDefault(x => x.Id == id);
-            var Claims = UserClaims.Where(c => c.UserId == User.Id).ToList();
-            User.Claims = Claims.ConvertAll(x => new Claim(x.ClaimName,x.ClaimValue));
+            if(User != null)
+            {
+                var Claims = UserClaims.Where(c => c.UserId == User.Id).ToList();
+                User.Claims = User.UserClaims.ConvertAll
+                    (x => new Claim(x.ClaimName, x.ClaimValue));
+            }
             return User;
         }
 
         public User FindByUsername(string username)
         {
             var User = Users.FirstOrDefault(x => x.UserName.Equals(username));
-            var Claims = UserClaims.Where(c => c.UserId == User.Id).ToList();
-            User.Claims = Claims.ConvertAll(x => new Claim(x.ClaimName, x.ClaimValue));
+            if(User != null)
+            {
+                var Claims = UserClaims.Where(c => c.UserId == User.Id).ToList();
+                User.Claims = Claims.ConvertAll
+                    (x => new Claim(x.ClaimName, x.ClaimValue));
+            }
             return User;
         }
 
@@ -61,8 +69,12 @@ namespace AuthorizationBlazorServer.Server.Services
             var User = Users.FirstOrDefault(x =>
                 x.ExternalName == provider &&
                 x.ExternalId == userId);
-            var Claims = UserClaims.Where(c => c.UserId == User.Id).ToList();
-            User.Claims = Claims.ConvertAll(x => new Claim(x.ClaimName, x.ClaimValue));
+            if(User != null)
+            {
+                var Claims = UserClaims.Where(c => c.UserId == User.Id).ToList();
+                User.Claims = Claims.ConvertAll
+                    (x => new Claim(x.ClaimName, x.ClaimValue));
+            }
             return User;
         }
 

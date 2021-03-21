@@ -4,11 +4,13 @@ using IdentityServer4.Models;
 using System.Linq;
 using System.Threading.Tasks;
 using IdentityServer4;
+using IdentityServer4.Test;
 
 namespace IdentityServerApp.Identity
 {
     public static class Config
     {
+
         public static IEnumerable<ApiScope> ApiScopes =>
            new List<ApiScope>
            {

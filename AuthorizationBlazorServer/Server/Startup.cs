@@ -13,6 +13,7 @@ using IdentityServer4.EntityFramework.Entities;
 using System.Collections.Generic;
 using IdentityServerApp.Identity;
 using IdentityServer4.EntityFramework.Mappers;
+using AuthorizationBlazorServer.Server.Services;
 
 namespace AuthorizationBlazorServer.Server
 {
@@ -33,8 +34,13 @@ namespace AuthorizationBlazorServer.Server
             services.AddControllersWithViews();
             services.AddRazorPages();
             string ConnectionString = Configuration.GetConnectionString("IdentityServerDb");
+            string UserConnectionString = Configuration.GetConnectionString("UserDb");
             string MigrationsAssembly = Assembly.GetExecutingAssembly().GetName().Name;
             var Builder = services.AddIdentityServer()
+                .AddUsers(options =>
+                {
+                    options.UseSqlServer(UserConnectionString);
+                })
                 .AddConfigurationStore(options =>
                 {
                     options.ConfigureDbContext = builder =>

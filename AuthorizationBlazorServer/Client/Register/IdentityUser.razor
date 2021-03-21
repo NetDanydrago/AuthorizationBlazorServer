@@ -1,0 +1,132 @@
+﻿@page "/identityserver4/register/user"
+@inject HttpClient HttpClient
+@inject NavigationManager Navigation
+<Popper Show="@ShowPopper" Message="@Message" />
+<div class="container">
+    <div class="card">
+        <div class="card-header">
+            Registra un Usuario
+            <button class="btn btn-success" @onclick="Navigate" style="margin-left:50%">
+                Ver Usuarios
+            </button>
+        </div>
+        <div class="card-body">
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label>Nombre de Usuario</label>
+                    <input class="form-control" @bind="User.UserName">
+                </div>
+                <div class="form-group col-md-6">
+                    <label>Contraseña</label>
+                    <input type="password" @bind="User.Password" class="form-control">
+                </div>
+                <div class="form-group  col-md-4">
+                    <label>Nombre</label>
+                    <input type="text" @bind="User.Name" class="form-control">
+                </div>
+                <div class="form-group  col-md-4">
+                    <label>Apellidos</label>
+                    <input type="text" class="form-control" @bind="User.FamilyName">
+                </div>
+                <div class="form-group  col-md-4">
+                    <label>Apodo</label>
+                    <input type="text" @bind="User.GivenName" class="form-control">
+                </div>
+                <div class="form-group  col-md-6">
+                    <label>Email</label>
+                    <input type="text" class="form-control" @bind="User.Email">
+                </div>
+                <div class="form-group  col-md-6">
+                    <label>Web Site</label>
+                    <input type="text" class="form-control" @bind="User.WebSite">
+                </div>
+            </div>
+            <div class="form-group form-check">
+                <input class="form-check-input" @bind="ShowAddAddress"
+                       type="checkbox">
+                <label class="form-check-label" for="AllowOfflineAccess">
+                    Agregar Direccion
+                </label>
+            </div>
+            @if (ShowAddAddress)
+            {
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label>Calle</label>
+                        <input type="text" @bind="User.Street" class="form-control">
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label>Localidad</label>
+                        <input type="text" @bind="User.Locality" class="form-control">
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label>Codigo Postal</label>
+                        <input type="text" @bind="User.PostalCode" class="form-control">
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label>Pais</label>
+                        <input type="text" @bind="User.Country" class="form-control">
+                    </div>
+                </div>
+            }
+            <div class="form-row">
+                <div class="form-group col-md-4">
+                    <label>RolesPermitidos</label>
+                    @foreach (var Role in Roles)
+                    {
+                        <div class="form-check">
+                            <input class="form-check-input" @bind="Role.IsSelected"
+                                   type="checkbox" id="AllowOfflineAccess">
+                            <label class="form-check-label" for="AllowOfflineAccess">
+                                @Role.Name
+                            </label>
+                        </div>
+                    }
+                </div>
+            </div>
+            <button @onclick="RegisterUser" class="btn btn-primary">Registrar</button>
+        </div>
+            </div>
+</div>
+@code {
+
+    List<Role> Roles = new List<Role>() { new Role {Name = "admin"},
+        new Role {Name = "accountant"}, new Role {Name = "seller"} };
+
+    UserViewModel User = new UserViewModel();
+
+    string Message = string.Empty;
+
+    bool ShowPopper;
+
+    bool ShowAddAddress = false;
+
+
+    async void RegisterUser()
+    {
+        User.Roles = Roles.Where(x => x.IsSelected == true)
+           .Select(x => x.Name).ToList();
+        var Response = await HttpClient.PostAsJsonAsync<UserViewModel>("api/identity/User", User);
+        if (Response.IsSuccessStatusCode)
+        {
+            await SuccessPopper("Se registro el cliente correctamente");
+        }
+    }
+
+
+    private async Task SuccessPopper(string message)
+    {
+        Message = message;
+        ShowPopper = true;
+        StateHasChanged();
+        await Task.Delay(3000);
+        ShowPopper = false;
+        StateHasChanged();
+    }
+
+    private void Navigate()
+    {
+        Navigation.NavigateTo("identityserver4/remove/user");
+    }
+
+}

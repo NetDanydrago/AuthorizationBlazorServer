@@ -16,6 +16,7 @@ using IdentityServer4.EntityFramework.Mappers;
 using AuthorizationBlazorServer.Server.Services;
 using Microsoft.AspNetCore.Authentication.Google;
 using IdentityServer4;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 namespace AuthorizationBlazorServer.Server
 {
@@ -35,6 +36,19 @@ namespace AuthorizationBlazorServer.Server
            
             services.AddControllersWithViews();
             services.AddRazorPages();
+
+
+            services.AddAuthentication(options => {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            }
+            )
+            .AddJwtBearer(options =>
+            {
+              options.Authority = Configuration["AuthorizationServer:Authority"];
+              options.Audience = Configuration["AuthorizationServer:Audience"];
+            });
+
             string ConnectionString = Configuration.GetConnectionString("IdentityServerDb");
             string UserConnectionString = Configuration.GetConnectionString("UserDb");
             string MigrationsAssembly = Assembly.GetExecutingAssembly().GetName().Name;
@@ -60,8 +74,8 @@ namespace AuthorizationBlazorServer.Server
                  =>
             {
                 options.SignInScheme = IdentityServerConstants.ExternalCookieAuthenticationScheme;
-                options.ClientId = "808883587000-ce6a2fnuj2r24slgcjmli1m4mg5885j9.apps.googleusercontent.com";
-                options.ClientSecret = "OJ4YraeaRQsL3phsOaol4xSc";
+                options.ClientId = "";
+                options.ClientSecret = "";
             });
         }
 

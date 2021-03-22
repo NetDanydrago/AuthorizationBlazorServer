@@ -21,8 +21,15 @@ namespace AuthorizationBlazorServer.Server.Repository
         public async Task<bool> AddUser(Services.User user)
         {
             bool Result = false;
-            await Context.AddAsync(user);
-            Result = await Context.SaveChangesAsync() > 0;
+            try
+            {
+                await Context.AddAsync(user);
+                Result = await Context.SaveChangesAsync() > 0;
+            }
+            catch(Exception e)
+            {
+                var Message = e;
+            }
             return Result;
         }
 

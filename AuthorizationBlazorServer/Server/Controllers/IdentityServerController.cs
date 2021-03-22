@@ -11,6 +11,7 @@ using AuthorizationBlazorServer.Shared;
 using AuthorizationBlazorServer.Server.Helpers;
 using Microsoft.EntityFrameworkCore;
 using AuthorizationBlazorServer.Server.Services;
+using Microsoft.AspNetCore.Authorization;
 
 namespace AuthorizationBlazorServer.Server.Controllers
 {

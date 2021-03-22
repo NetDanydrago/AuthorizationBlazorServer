@@ -1,0 +1,37 @@
+﻿@page "/identityserver4/Error/{AccountError}/{ErrorDescription}/{RequestId}"
+
+<div class="error-page">
+    <div class="lead">
+        <h1>Error</h1>
+    </div>
+
+    <div class="row">
+        <div class="col-sm-6">
+            <div class="alert alert-danger">
+                Sorry, there was an error
+                    <strong>
+                        <em>
+                            : @AccountError 
+                        </em>
+                    </strong>
+                    @if(ErrorDescription != null)
+                    {
+                        <div>@ErrorDescription</div>
+                    }
+            @if (RequestId != null)
+            {
+                <div class="request-id">Request Id: @RequestId</div>
+            }
+        </div>
+    </div>
+</div>
+</div>
+
+@code{
+    [Parameter]
+    public string AccountError { get; set; }
+    [Parameter]
+    public string ErrorDescription { get; set; }
+    [Parameter]
+    public string RequestId { get; set; }
+}

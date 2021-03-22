@@ -14,6 +14,8 @@ using System.Collections.Generic;
 using IdentityServerApp.Identity;
 using IdentityServer4.EntityFramework.Mappers;
 using AuthorizationBlazorServer.Server.Services;
+using Microsoft.AspNetCore.Authentication.Google;
+using IdentityServer4;
 
 namespace AuthorizationBlazorServer.Server
 {
@@ -54,6 +56,13 @@ namespace AuthorizationBlazorServer.Server
                     options.MigrationsAssembly(MigrationsAssembly));
                 })
                 .AddDeveloperSigningCredential();
+            services.AddAuthentication().AddGoogle(GoogleDefaults.AuthenticationScheme, options
+                 =>
+            {
+                options.SignInScheme = IdentityServerConstants.ExternalCookieAuthenticationScheme;
+                options.ClientId = "808883587000-ce6a2fnuj2r24slgcjmli1m4mg5885j9.apps.googleusercontent.com";
+                options.ClientSecret = "OJ4YraeaRQsL3phsOaol4xSc";
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

@@ -16,9 +16,10 @@ namespace AuthorizationBlazorServer.Server.Services
 
         public DbSet<UserClaim> UserClaims {get; set;}
 
+
         public UserContext(DbContextOptions<UserContext> options) : base(options)
         {
-          
+
         }
 
         public bool ValidateCredentials(string username, string password)
@@ -141,12 +142,17 @@ namespace AuthorizationBlazorServer.Server.Services
                     ClaimValue = x.Value,
                     UserId = sub,
                 }),
+                IsActive = true,
                 Claims = filtered
             };
 
             // Agregar al Contexto
             Users.Add(user);
-
+           bool IsSuccess =  this.SaveChanges() > 0;
+            if (!IsSuccess)
+            {
+                user = null;
+            }
             return user;
         }
 

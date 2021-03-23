@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.AspNetCore.Authentication;
 using System.Linq;
 using System.Reflection;
 using IdentityServer4.EntityFramework.Entities;
@@ -17,6 +18,7 @@ using AuthorizationBlazorServer.Server.Services;
 using Microsoft.AspNetCore.Authentication.Google;
 using IdentityServer4;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.ApiAuthorization.IdentityServer;
 
 namespace AuthorizationBlazorServer.Server
 {
@@ -37,16 +39,16 @@ namespace AuthorizationBlazorServer.Server
             services.AddControllersWithViews();
             services.AddRazorPages();
 
-
-            services.AddAuthentication(options => {
-                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-            }
-            )
-            .AddJwtBearer(options =>
+            services.AddAuthentication().AddIdentityServerJwt();
+            services.Configure<JwtBearerOptions>(
+            IdentityServerJwtConstants.IdentityServerJwtBearerScheme,
+            options =>
             {
-              options.Authority = Configuration["AuthorizationServer:Authority"];
-              options.Audience = Configuration["AuthorizationServer:Audience"];
+                options.Authority = "https://localhost:44300";
+                options.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters()
+                {
+                    RoleClaimType = "role"
+                };
             });
 
             string ConnectionString = Configuration.GetConnectionString("IdentityServerDb");
@@ -74,8 +76,8 @@ namespace AuthorizationBlazorServer.Server
                  =>
             {
                 options.SignInScheme = IdentityServerConstants.ExternalCookieAuthenticationScheme;
-                options.ClientId = "";
-                options.ClientSecret = "";
+                options.ClientId = "808883587000-ce6a2fnuj2r24slgcjmli1m4mg5885j9.apps.googleusercontent.com";
+                options.ClientSecret = "OJ4YraeaRQsL3phsOaol4xSc";
             });
         }
 
@@ -102,6 +104,7 @@ namespace AuthorizationBlazorServer.Server
 
             app.UseRouting();
             app.UseIdentityServer();
+            app.UseAuthorization();
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapRazorPages();

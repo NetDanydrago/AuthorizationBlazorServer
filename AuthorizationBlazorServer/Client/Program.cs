@@ -16,9 +16,12 @@ namespace AuthorizationBlazorServer.Client
         {
             var builder = WebAssemblyHostBuilder.CreateDefault(args);
             builder.RootComponents.Add<App>("#app");
-
             builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
-
+            builder.Services.AddOidcAuthentication(options =>
+            {
+                builder.Configuration.Bind("oidc", options.ProviderOptions);
+                options.UserOptions.RoleClaim = "role";
+            }).AddAccountClaimsPrincipalFactory<Services.ArrayClaimsPrincipalFactory>();
             await builder.Build().RunAsync();
         }
     }

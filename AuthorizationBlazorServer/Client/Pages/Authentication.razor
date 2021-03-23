@@ -1,0 +1,14 @@
+﻿@page "/authentication/{action}"
+<RemoteAuthenticatorView Action="@Action">
+    <LoggingIn>
+        You are about to be redirected to Login...
+    </LoggingIn>
+    <CompletingLoggingIn>
+        Completing Login...
+    </CompletingLoggingIn>
+</RemoteAuthenticatorView>
+@code
+{
+    [Parameter]
+    public string Action { get; set; }
+}

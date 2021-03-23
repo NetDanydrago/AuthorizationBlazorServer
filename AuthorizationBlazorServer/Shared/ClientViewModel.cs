@@ -29,7 +29,7 @@ namespace AuthorizationBlazorServer.Shared
         public string PostLogoutRedirectUri { get; set; }
         public bool IsIncludeIDToken { get; set; }
         public bool IsIncludeRefreshToken { get; set; }
-        public bool IsEnableCors { get; set; }
+        public string UrlCors { get; set; }
 
     }
 }

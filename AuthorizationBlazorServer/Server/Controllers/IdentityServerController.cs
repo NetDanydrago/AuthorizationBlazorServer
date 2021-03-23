@@ -16,6 +16,7 @@ using Microsoft.AspNetCore.Authorization;
 namespace AuthorizationBlazorServer.Server.Controllers
 {
     [Route("api/[controller]")]
+    [Authorize]
     [ApiController]
     public class IdentityServerController : ControllerBase
     {
@@ -49,6 +50,7 @@ namespace AuthorizationBlazorServer.Server.Controllers
         [HttpPost("Client")]
         public async Task<ActionResult> RegisterClient(ClientViewModel clientViewModel)
         {
+            var A = this.User.Identity.IsAuthenticated;
             ActionResult Result = Ok();
             var Client = Helper.ViewModelToClient(clientViewModel);
             bool IsSuccess = await Repository.AddClient(Client);

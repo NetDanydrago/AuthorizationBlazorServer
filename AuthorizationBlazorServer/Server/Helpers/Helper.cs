@@ -130,6 +130,10 @@ namespace AuthorizationBlazorServer.Server.Helpers
                 Client.RedirectUris = new[]{ clientViewModel.RedirectUri };
                 Client.PostLogoutRedirectUris = new[] { clientViewModel.PostLogoutRedirectUri};
             }
+            if (!string.IsNullOrEmpty(clientViewModel.UrlCors))
+            {
+                Client.AllowedCorsOrigins = new[] { clientViewModel.UrlCors };
+            }
             Client.AllowedGrantTypes = Helper.GetGrantType(clientViewModel.GrantType);
             return Client;
         }

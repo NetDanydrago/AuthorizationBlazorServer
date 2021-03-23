@@ -19,6 +19,7 @@ using Microsoft.AspNetCore.Mvc.Abstractions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace AuthorizationBlazorServer.Server.Controllers
@@ -154,7 +155,10 @@ namespace AuthorizationBlazorServer.Server.Controllers
                     // subject id y username.
                     var isuser = new IdentityServerUser(User.Id)
                     {
-                        DisplayName = User.UserName
+                        DisplayName = User.UserName,
+                        AdditionalClaims = new[] 
+                        {new Claim("role",
+                        User.UserClaims.Find(x => x.ClaimName == "role").ClaimValue)}
                     };
 
                     // Context almacena la configuración del usuario.

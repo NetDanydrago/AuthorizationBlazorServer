@@ -39,17 +39,6 @@ namespace AuthorizationBlazorServer.Server
             services.AddControllersWithViews();
             services.AddRazorPages();
 
-            services.AddAuthentication().AddIdentityServerJwt();
-            services.Configure<JwtBearerOptions>(
-            IdentityServerJwtConstants.IdentityServerJwtBearerScheme,
-            options =>
-            {
-                options.Authority = "https://localhost:44300";
-                options.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters()
-                {
-                    RoleClaimType = "role"
-                };
-            });
 
             string ConnectionString = Configuration.GetConnectionString("IdentityServerDb");
             string UserConnectionString = Configuration.GetConnectionString("UserDb");

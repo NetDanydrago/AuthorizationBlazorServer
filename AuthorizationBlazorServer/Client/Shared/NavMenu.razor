@@ -12,31 +12,36 @@
                 <span class="oi oi-home" aria-hidden="true"></span> Home
             </NavLink>
         </li>
-        <li class="nav-item px-3">
-            <NavLink class="nav-link" href="identityserver4/register/client">
-                <span class="oi oi-list-rich" aria-hidden="true"></span> Registrar Cliente
-            </NavLink>
-        </li>
-        <li class="nav-item px-3">
-            <NavLink class="nav-link" href="identityserver4/register/apiresource">
-                <span class="oi oi-list-rich" aria-hidden="true"></span> Registrar Api
-            </NavLink>
-        </li>
-        <li class="nav-item px-3">
-            <NavLink class="nav-link" href="identityserver4/register/apiscope">
-                <span class="oi oi-list-rich" aria-hidden="true"></span> Registrar Scopes
-            </NavLink>
-        </li>
-        <li class="nav-item px-3">
-            <NavLink class="nav-link" href="identityserver4/register/identityresource">
-                <span class="oi oi-list-rich" aria-hidden="true"></span> Registrar Identidad
-            </NavLink>
-        </li>
-        <li class="nav-item px-3">
-            <NavLink class="nav-link" href="identityserver4/register/user">
-                <span class="oi oi-list-rich" aria-hidden="true"></span> Registrar Usuario
-            </NavLink>
-        </li>
+        <AuthorizeView>
+            <Authorized>
+                <li class="nav-item px-3">
+                    <NavLink class="nav-link" href="identityserver4/register/client">
+                        <span class="oi oi-list-rich" aria-hidden="true"></span> Registrar Cliente
+                    </NavLink>
+                </li>
+                <li class="nav-item px-3">
+                    <NavLink class="nav-link" href="identityserver4/register/apiresource">
+                        <span class="oi oi-list-rich" aria-hidden="true"></span> Registrar Api
+                    </NavLink>
+                </li>
+                <li class="nav-item px-3">
+                    <NavLink class="nav-link" href="identityserver4/register/apiscope">
+                        <span class="oi oi-list-rich" aria-hidden="true"></span> Registrar Scopes
+                    </NavLink>
+                </li>
+                <li class="nav-item px-3">
+                    <NavLink class="nav-link" href="identityserver4/register/identityresource">
+                        <span class="oi oi-list-rich" aria-hidden="true"></span> Registrar Identidad
+                    </NavLink>
+                </li>
+                <li class="nav-item px-3">
+                    <NavLink class="nav-link" href="identityserver4/register/user">
+                        <span class="oi oi-list-rich" aria-hidden="true"></span> Registrar Usuario
+                    </NavLink>
+                </li>
+            </Authorized>
+        </AuthorizeView>
+        
     </ul>
 </div>
 

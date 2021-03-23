@@ -16,7 +16,7 @@ using Microsoft.AspNetCore.Authorization;
 namespace AuthorizationBlazorServer.Server.Controllers
 {
     [Route("api/[controller]")]
-    [Authorize]
+    [Authorize(Roles = "sadmin")]
     [ApiController]
     public class IdentityServerController : ControllerBase
     {

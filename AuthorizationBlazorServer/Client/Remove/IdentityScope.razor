@@ -1,33 +1,42 @@
 ﻿@page "/identityserver4/remove/apiscope"
 @inject HttpClient HttpClient
-<Popper Show="@ShowPopper" Message="@Message" />
-<div class="container">
-   <table class="table">
-        <thead class="thead-dark">
-            <tr>
-                <th scope="col">Nombre</th>
-                <th scope="col">Nombre a mostrar</th>
-                <th scope="col">Accion</th>
-            </tr>
-        </thead>
-        <tbody>
+<AuthorizeView Roles="sadmin">
+    <Authorized>
+        <Popper Show="@ShowPopper" Message="@Message" />
+        <div class="container">
+            <table class="table">
+                <thead class="thead-dark">
+                    <tr>
+                        <th scope="col">Nombre</th>
+                        <th scope="col">Nombre a mostrar</th>
+                        <th scope="col">Accion</th>
+                    </tr>
+                </thead>
+                <tbody>
 
-            @foreach (var Scope in Scopes)
-            {
-                <tr>
-                    <td>@Scope.Name</td>
-                    <td>@Scope.DisplayName</td>
-                    <td>
-                        <button class="btn btn-danger"
-                                @onclick="() => DeleteScope(Scope.Name)">
-                            Eliminar
-                        </button>
-                    </td>
-                </tr>
-             }
-            </tbody>
-    </table>
-</div>
+                    @foreach (var Scope in Scopes)
+                    {
+                        <tr>
+                            <td>@Scope.Name</td>
+                            <td>@Scope.DisplayName</td>
+                            <td>
+                                <button class="btn btn-danger"
+                                        @onclick="() => DeleteScope(Scope.Name)">
+                                    Eliminar
+                                </button>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </Authorized>
+    <NotAuthorized>
+     No Tienes acceso al recurso.
+    </NotAuthorized>
+</AuthorizeView>
+
+
 
 @code {
 

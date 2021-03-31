@@ -1,36 +1,44 @@
 ﻿@page "/identityserver4/remove/identityresource"
 @inject HttpClient HttpClient
-<Popper Show="@ShowPopper" Message="@Message" />
-<div class="container">
-    <div class="container">
-        <table class="table">
-            <thead class="thead-dark">
-                <tr>
-                    <th scope="col">Nombre</th>
-                    <th scope="col">Nombre a mostrar</th>
-                    <th scope="col">Accion</th>
-                </tr>
-            </thead>
-            <tbody>
+<AuthorizeView Roles="sadmin">
+    <Authorized>
+        <Popper Show="@ShowPopper" Message="@Message" />
+        <div class="container">
+            <div class="container">
+                <table class="table">
+                    <thead class="thead-dark">
+                        <tr>
+                            <th scope="col">Nombre</th>
+                            <th scope="col">Nombre a mostrar</th>
+                            <th scope="col">Accion</th>
+                        </tr>
+                    </thead>
+                    <tbody>
 
-                @foreach (var identity in Identitys)
-                {
-                    <tr>
-                        <td>@identity.Name</td>
-                        <td>@identity.DisplayName</td>
-                        <td>
-                            <button class="btn btn-danger"
-                                    @onclick="() => DeleteIdentityScope(identity.Name)">
-                                Eliminar
-                            </button>
-                        </td>
-                    </tr>
-                }
-                  
-                </tbody>
-        </table>
-    </div>
-</div>
+                        @foreach (var identity in Identitys)
+                        {
+                            <tr>
+                                <td>@identity.Name</td>
+                                <td>@identity.DisplayName</td>
+                                <td>
+                                    <button class="btn btn-danger"
+                                            @onclick="() => DeleteIdentityScope(identity.Name)">
+                                        Eliminar
+                                    </button>
+                                </td>
+                            </tr>
+                        }
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </Authorized>
+    <NotAuthorized>
+     No Tienes acceso al recurso.
+    </NotAuthorized>
+</AuthorizeView>
+
 @code {
 
     string Message = string.Empty;

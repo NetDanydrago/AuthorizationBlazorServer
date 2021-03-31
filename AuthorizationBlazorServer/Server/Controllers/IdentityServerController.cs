@@ -12,11 +12,12 @@ using AuthorizationBlazorServer.Server.Helpers;
 using Microsoft.EntityFrameworkCore;
 using AuthorizationBlazorServer.Server.Services;
 using Microsoft.AspNetCore.Authorization;
+using AuthorizationBlazorServer.Server.Policies;
 
 namespace AuthorizationBlazorServer.Server.Controllers
 {
     [Route("api/[controller]")]
-    [Authorize(Roles = "sadmin")]
+    [Authorize(Policy = RolePolicies.SAdmin)]
     [ApiController]
     public class IdentityServerController : ControllerBase
     {

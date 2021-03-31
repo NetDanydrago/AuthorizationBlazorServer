@@ -129,81 +129,84 @@ namespace AuthorizationBlazorServer.Server.Controllers
             // Verificar si estamos en el contexto de una petición de autorización
             AuthorizationRequest Context =
             await Interaction.GetAuthorizationContextAsync(model.ReturnUrl);
-                // ¿Es un usuario válido?
-                if (Users.ValidateCredentials(model.Username, model.Password))
+            // ¿Es un usuario válido?
+            if (Users.ValidateCredentials(model.Username, model.Password))
+            {
+                // Es un usuario válido. Obtener los datos del usuario 
+                // buscándolo por su nombre.
+                var User = Users.FindByUsername(model.Username);
+                // Lanzar un evento login exitoso para el log.
+                await Events.RaiseAsync(new UserLoginSuccessEvent(User.UserName, User.Id, User.UserName, clientId: Context?.Client.ClientId));
+
+                // Solo establecer expiración explicita si un usuario 
+                // selecciona "remember me", de otra forma, tomamos la 
+                // configuración del middleware Cookie.
+                AuthenticationProperties Props = null;
+                if (AccountOptions.AllowRememberLogin && model.RememberLogin)
                 {
-                    // Es un usuario válido. Obtener los datos del usuario 
-                    // buscándolo por su nombre.
-                    var User = Users.FindByUsername(model.Username);
-                    // Lanzar un evento login exitoso para el log.
-                    await Events.RaiseAsync(new UserLoginSuccessEvent(User.UserName, User.Id, User.UserName, clientId: Context?.Client.ClientId));
-
-                    // Solo establecer expiración explicita si un usuario 
-                    // selecciona "remember me", de otra forma, tomamos la 
-                    // configuración del middleware Cookie.
-                    AuthenticationProperties Props = null;
-                    if (AccountOptions.AllowRememberLogin && model.RememberLogin)
+                    Props = new AuthenticationProperties
                     {
-                        Props = new AuthenticationProperties
-                        {
-                            IsPersistent = true,
-                            ExpiresUtc = DateTimeOffset.UtcNow.Add(AccountOptions.RememberMeLoginDuration)
-                        };
+                        IsPersistent = true,
+                        ExpiresUtc = DateTimeOffset.UtcNow.Add(AccountOptions.RememberMeLoginDuration)
                     };
+                };
 
-                    // Emitir la cookie de autenticación con el 
-                    // subject id y username.
-                    var isuser = new IdentityServerUser(User.Id)
+                // Emitir la cookie de autenticación con el 
+                // subject id y username.
+                var isuser = new IdentityServerUser(User.Id)
+                {
+                    DisplayName = User.UserName
+                };
+                //Agregar role al usuario antes de emitar la cookie de autenticación
+                if (User.UserClaims.Exists(c => c.ClaimName == "role"))
+                {
+                    isuser.AdditionalClaims = new[]{
+                        new Claim("role",User.UserClaims.Find
+                        (x => x.ClaimName == "role").ClaimValue)};
+                }
+                // Context almacena la configuración del usuario.
+                // ¿Hay información almacenada?
+                await HttpContext.SignInAsync(isuser, Props);
+
+                if (Context != null)
+                {
+                    if (Context.IsNativeClient())
                     {
-                        DisplayName = User.UserName,
-                        AdditionalClaims = new[] 
-                        {new Claim("role",
-                        User.UserClaims.Find(x => x.ClaimName == "role").ClaimValue)}
-                    };
-
-                    // Context almacena la configuración del usuario.
-                    // ¿Hay información almacenada?
-                    await HttpContext.SignInAsync(isuser, Props);
-
-                    if (Context != null)
-                    {
-                        if (Context.IsNativeClient())
-                        {
-                            Result = this.LoadingPage("Redirect", model.ReturnUrl);
-                        }
-                        else
-                        {
-                            Result = Ok(Redirect(model.ReturnUrl).Url);
-
-                        }
+                        Result = this.LoadingPage("Redirect", model.ReturnUrl);
                     }
                     else
                     {
-                        // Contexto = null 
-                        if (Url.IsLocalUrl(model.ReturnUrl))
-                        {
-                            // Redireccionar a una página local.
-                            Result = Ok(Redirect(model.ReturnUrl));
-                        }
-                        else if (string.IsNullOrEmpty(model.ReturnUrl))
-                        {
-                            Result = Ok(Redirect("~/"));
-                        }
-                        else
-                        {
-                            // Es un URL incorrecto. No debería suceder
-                            throw new Exception("Invalid return URL");
-                        }
+                        Result = Ok(Redirect(model.ReturnUrl).Url);
+
                     }
                 }
                 else
                 {
-                    // Credenciales no válidas
-                    await Events.RaiseAsync(new UserLoginFailureEvent(
-                     model.Username, "Invalid Credentials",
-                    clientId: Context?.Client.ClientId));
-
+                    // Contexto = null 
+                    if (Url.IsLocalUrl(model.ReturnUrl))
+                    {
+                        // Redireccionar a una página local.
+                        Result = Ok(Redirect(model.ReturnUrl));
+                    }
+                    else if (string.IsNullOrEmpty(model.ReturnUrl))
+                    {
+                        Result = Ok(Redirect("~/"));
+                    }
+                    else
+                    {
+                        // Es un URL incorrecto. No debería suceder
+                        throw new Exception("Invalid return URL");
+                    }
                 }
+            }
+            else
+            {
+                // Credenciales no válidas
+                await Events.RaiseAsync(new UserLoginFailureEvent(
+                 model.Username, "Invalid Credentials",
+                clientId: Context?.Client.ClientId));
+
+            }
             if (Result == null)
             {
                 Result = BadRequest("Usuario O Contraseña Invalido");
@@ -277,7 +280,7 @@ namespace AuthorizationBlazorServer.Server.Controllers
             else
             {
                 // Mostrar la página de sesión cerrada.
-                Result  = Redirect(Model.PostLogoutRedirectUri);
+                Result = Redirect(Model.PostLogoutRedirectUri);
 
             }
             return Result;

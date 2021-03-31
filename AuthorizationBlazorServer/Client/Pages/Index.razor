@@ -3,7 +3,7 @@
 @using Microsoft.Extensions.Configuration
 @inject IJSRuntime JSRuntime
 @inject IConfiguration Configuration
-<AuthorizeView>
+<AuthorizeView >
     <Authorized>
         <h2>Claims</h2>
         <dl>
@@ -17,10 +17,11 @@
         <h5>@SessionStorageKey</h5>
         <pre>@SessionStorage</pre>
     </Authorized>
+    <NotAuthorized>
+        <a href=".well-known/openid-configuration">Discovery Document</a>
+    </NotAuthorized>
 </AuthorizeView>
 
-
-<a href=".well-known/openid-configuration">Discovery Document</a>
 
 @code{
     string SessionStorage;

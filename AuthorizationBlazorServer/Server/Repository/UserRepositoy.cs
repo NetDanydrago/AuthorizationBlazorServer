@@ -43,9 +43,9 @@ namespace AuthorizationBlazorServer.Server.Repository
         public async Task<bool> RemoveUser(string Id)
         {
             bool Result = false;
-            var Entity = Context.Users.Where(x => x.Id == Id).FirstOrDefault();
-            var Claims = Context.UserClaims.Where(x => x.UserId == Id).ToList();
-            Context.UserClaims.RemoveRange(Claims);
+            var Entity = Context.Users.Where(x => x.Id == Id).
+                Include(x => x.UserClaims).FirstOrDefault();
+            Context.UserClaims.RemoveRange(Entity.UserClaims);
             Context.Users.Remove(Entity);
             Result = await Context.SaveChangesAsync() > 0;
             return Result;

@@ -43,13 +43,9 @@ namespace AuthorizationBlazorServer.Server.Services
 
         public User FindByUserId(string id)
         {
-            var User = Users.FirstOrDefault(x => x.Id == id);
-            if(User != null)
-            {
-                var Claims = UserClaims.Where(c => c.UserId == User.Id).ToList();
-                User.Claims = User.UserClaims.ConvertAll
+            var User = Users.Include(u => u.UserClaims).FirstOrDefault(x => x.Id == id);
+            User.Claims = User.UserClaims.ConvertAll
                     (x => new Claim(x.ClaimName, x.ClaimValue));
-            }
             return User;
         }
 
@@ -148,7 +144,7 @@ namespace AuthorizationBlazorServer.Server.Services
 
             // Agregar al Contexto
             Users.Add(user);
-           bool IsSuccess =  this.SaveChanges() > 0;
+            bool IsSuccess =  this.SaveChanges() > 0;
             if (!IsSuccess)
             {
                 user = null;

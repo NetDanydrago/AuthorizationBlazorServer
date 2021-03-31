@@ -1,24 +1,15 @@
 using IdentityServer4.EntityFramework.DbContexts;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.AspNetCore.Authentication;
-using System.Linq;
 using System.Reflection;
-using IdentityServer4.EntityFramework.Entities;
-using System.Collections.Generic;
-using IdentityServerApp.Identity;
-using IdentityServer4.EntityFramework.Mappers;
 using AuthorizationBlazorServer.Server.Services;
 using Microsoft.AspNetCore.Authentication.Google;
 using IdentityServer4;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.ApiAuthorization.IdentityServer;
+using AuthorizationBlazorServer.Server.Policies;
 
 namespace AuthorizationBlazorServer.Server
 {
@@ -67,6 +58,11 @@ namespace AuthorizationBlazorServer.Server
                 options.SignInScheme = IdentityServerConstants.ExternalCookieAuthenticationScheme;
                 options.ClientId = "808883587000-ce6a2fnuj2r24slgcjmli1m4mg5885j9.apps.googleusercontent.com";
                 options.ClientSecret = "OJ4YraeaRQsL3phsOaol4xSc";
+            });
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy(RolePolicies.SAdmin,
+                    RolePolicies.SAdminPolicy());
             });
         }
 

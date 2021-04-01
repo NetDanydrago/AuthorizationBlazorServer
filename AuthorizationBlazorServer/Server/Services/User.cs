@@ -18,11 +18,8 @@ namespace AuthorizationBlazorServer.Server.Services
         public string Password { get; set; }
         public string ExternalName { get; set; }
         public string ExternalId { get; set; }
+        public string ValidationCode { get; set; }
         public bool IsActive { get; set; }
         public List<UserClaim> UserClaims {get; set;}
-        [NotMapped]
-        public ICollection<Claim> Claims { get; set; } = new HashSet<Claim>(new ClaimComparer());
-
-
     }
 }

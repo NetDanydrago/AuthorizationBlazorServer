@@ -1,0 +1,177 @@
+﻿@page "/identityserver4/details/client/{clientid}"
+@inject HttpClient HttpClient
+@inject NavigationManager Navigation
+<AuthorizeView Roles="sadmin">
+    <Authorized>
+        <Popper Show="@ShowPopper" Message="@Message" />
+        <div class="container">
+            <div class="card">
+                <div class="card-header">
+                    Registra un Cliente
+                    <button class="btn btn-success" @onclick="Navigate" style="margin-left:50%">
+                        Ver Clientes
+                    </button>
+                </div>
+                <div class="card-body">
+                    <div class="form-row">
+                        <div class="form-group col-md-12">
+                            <label for="ClientId">Nombre del Cliente</label>
+                            <input class="form-control" @bind="ClientApp.Name" id="ClientId">
+                        </div>
+                        <div class="form-group form-check">
+                            <input class="form-check-input" @bind="ClientApp.IsPublicClient"
+                                   type="checkbox" id="AllowOfflineAccess">
+                            <label class="form-check-label" for="AllowOfflineAccess">
+                                Es un Cliente Publico
+                            </label>
+                        </div>
+                        @if (!ClientApp.IsPublicClient)
+                        {
+                            <div class="form-group col-md-12">
+                                <label for="Secret">Contraseña</label>
+                                <input type="password" @bind="ClientApp.Secret" class="form-control" id="Secrete">
+                            </div>
+                        }
+                    </div>
+                    <div class="form-group">
+                        <label for="RedirectUri">Url de retorno</label>
+                        <input type="text" @bind="ClientApp.RedirectUri" class="form-control" id="RedirectUri">
+                    </div>
+                    <div class="form-group">
+                        <label for="PostLogoutRedirectUri">Url de retorno posterior a cerrar sesion</label>
+                        <input type="text" class="form-control" @bind="ClientApp.PostLogoutRedirectUri" id="PostLogoutRedirectUri">
+                    </div>
+                    <div class="form-group form-check">
+                        <input class="form-check-input" @bind="IsEnableCors"
+                               type="checkbox" id="AllowOfflineAccess">
+                        <label class="form-check-label" for="AllowOfflineAccess">
+                            Habilitar Cors
+                        </label>
+                    </div>
+                    @if (IsEnableCors)
+                    {
+                        <div class="form-group">
+                            <label for="Cors">Url de cors</label>
+                            <input type="text" class="form-control" @bind="ClientApp.UrlCors">
+                        </div>
+                    }
+
+
+                    <div class="form-row">
+                        <div class="form-group col-md-4">
+                            <label for="inputState">Permisos Permitidos</label>
+                            @foreach (var Scope in Scopes)
+                            {
+                                <div class="form-check">
+                                    <input class="form-check-input" @bind="Scope.IsSelected"
+                                           type="checkbox" id="AllowOfflineAccess">
+                                    <label class="form-check-label" for="AllowOfflineAccess">
+                                        @Scope.Name
+                                    </label>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group col-md-4">
+                            <label for="inputState">GrantType</label>
+                            <select id="inputState" @bind="ClientApp.GrantType" class="form-control">
+                                <option selected>Code</option>
+                                <option value="@Flows.ClientCredentials">ClientCredentials</option>
+                                <option value="@Flows.ResourceOwnerPasswordAndClientCredentials">ResourceOwnerPasswordAndClientCredentials</option>
+                                <option value="@Flows.CodeAndClientCredentials">CodeAndClientCredentials</option>
+                                <option value="@Flows.DeviceFlow">DeviceFlow</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="form-check">
+                            <input class="form-check-input" @bind="ClientApp.IsIncludeRefreshToken" type="checkbox" id="AllowOfflineAccess">
+                            <label class="form-check-label" for="AllowOfflineAccess">
+                                Permitir Refresh Token
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" @bind="ClientApp.IsIncludeIDToken" type="checkbox" id="AlwaysIncludeUserClaimsInIdToken">
+                            <label class="form-check-label" for="AlwaysIncludeUserClaimsInIdToken">
+                                Incluir siempre id token
+                            </label>
+                        </div>
+                    </div>
+                    <button @onclick="RegisterClient" class="btn btn-primary">Registrar</button>
+                </div>
+            </div>
+        </div>
+    </Authorized>
+    <NotAuthorized>
+        No Tienes acceso al recurso.
+    </NotAuthorized>
+</AuthorizeView>
+        
+
+
+
+@code {
+
+    public string ClientId { get; set; }
+
+    bool IsEnableCors = false;
+
+    List<Scope> Scopes = new List<Scope>();
+
+    ClientViewModel ClientApp = new ClientViewModel();
+
+    string Message = string.Empty;
+
+    bool ShowPopper;
+
+    protected async override Task OnInitializedAsync()
+    {
+
+        var ScopesContent = await HttpClient.GetFromJsonAsync
+   <List<ScopeViewModel>>("api/identityserver/ApiScope");
+
+        var IdentityResoucesContent = await HttpClient.GetFromJsonAsync
+            <List<IdentityResourceViewModel>>("api/identityserver/IdentityResource");
+
+        if (ScopesContent.Count > 0)
+        {
+            Scopes.AddRange(ScopesContent.ConvertAll(x => new Scope() { Name = x.Name }));
+        }
+        if (IdentityResoucesContent.Count > 0)
+        {
+            Scopes.AddRange(IdentityResoucesContent.ConvertAll
+                (x => new Scope() { Name = x.Name }));
+        }
+
+    }
+
+    async void RegisterClient()
+    {
+
+        ClientApp.Scopes = Scopes.Where(x => x.IsSelected == true)
+            .Select(x => x.Name).ToArray();
+        var Response = await HttpClient.PostAsJsonAsync<ClientViewModel>("api/identityserver/Client", ClientApp);
+        if (Response.IsSuccessStatusCode)
+        {
+            await SuccessPopper("Se registro el cliente correctamente");
+        }
+    }
+
+
+    private async Task SuccessPopper(string message)
+    {
+        Message = message;
+        ShowPopper = true;
+        StateHasChanged();
+        await Task.Delay(3000);
+        ShowPopper = false;
+        StateHasChanged();
+    }
+
+    private void Navigate()
+    {
+        Navigation.NavigateTo("identityserver4/remove/client");
+    }
+
+}

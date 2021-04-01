@@ -5,6 +5,7 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace AuthorizationBlazorServer.Server.Services
@@ -35,7 +36,8 @@ namespace AuthorizationBlazorServer.Server.Services
                     context.Subject.GetSubjectId());
                 if(User != null)
                 {
-                    context.AddRequestedClaims(User.Claims);
+                    context.AddRequestedClaims(User.UserClaims.ConvertAll
+                    (x => new Claim(x.ClaimName, x.ClaimValue)));
                 }
                 context.LogIssuedClaims(Logger);
             }

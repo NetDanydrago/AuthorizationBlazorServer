@@ -3,14 +3,16 @@ using AuthorizationBlazorServer.Server.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace AuthorizationBlazorServer.Server.Data.Migrations.User
 {
     [DbContext(typeof(UserContext))]
-    partial class UserStoreModelSnapshot : ModelSnapshot
+    [Migration("20210401194057_codevalidation")]
+    partial class codevalidation
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

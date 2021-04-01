@@ -52,6 +52,22 @@ namespace AuthorizationBlazorServer.Server.Controllers
             Events = events;
         }
 
+        [HttpGet("ExternalProviders")]
+        public async Task<IActionResult> GetExternalProvidersAsync()
+        {
+           IEnumerable<AuthenticationScheme> Schemes =
+                                await SchemeProvider.GetAllSchemesAsync();
+            // Extraer de la lista de esquemas, la lista de proveedores
+           List<ExternalProvider> Providers = Schemes.Where(s => s.DisplayName != null)
+           .Select(s => new ExternalProvider
+           {
+               DisplayName = s.DisplayName,
+               AuthenticationScheme = s.Name
+           })
+           .ToList();
+            return Ok(Providers);
+        }
+
         [HttpGet("Login")]
         public IActionResult Login(string returnUrl)
         {

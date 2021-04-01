@@ -56,8 +56,8 @@ namespace AuthorizationBlazorServer.Server
                  =>
             {
                 options.SignInScheme = IdentityServerConstants.ExternalCookieAuthenticationScheme;
-                options.ClientId = "";
-                options.ClientSecret = "";
+                options.ClientId = "808883587000-ce6a2fnuj2r24slgcjmli1m4mg5885j9.apps.googleusercontent.com";
+                options.ClientSecret = "j8Giz_CVRQUHgn9xKcbEuW1B";
             });
             services.AddAuthorization(options =>
             {

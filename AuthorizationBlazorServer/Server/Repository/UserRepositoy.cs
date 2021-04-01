@@ -40,6 +40,20 @@ namespace AuthorizationBlazorServer.Server.Repository
             return Result;
         }
 
+        public User GetUserById(string id)
+        {
+            return Context.Users.Where
+                (u => u.Id == id).FirstOrDefault();
+        }
+
+        public async Task<bool> UpdateUser(User user)
+        {
+            bool Result = false;
+            Context.Users.Update(user);
+            Result = await Context.SaveChangesAsync() > 0;
+            return Result;
+        }
+
         public async Task<bool> RemoveUser(string Id)
         {
             bool Result = false;

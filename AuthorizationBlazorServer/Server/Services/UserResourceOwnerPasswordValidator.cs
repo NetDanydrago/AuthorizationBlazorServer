@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authentication;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace AuthorizationBlazorServer.Server.Services
@@ -30,7 +31,8 @@ namespace AuthorizationBlazorServer.Server.Services
                 context.Result = new GrantValidationResult(
                     user.Id ?? throw new ArgumentException("ID not set", nameof(user.Id)),
                     OidcConstants.AuthenticationMethods.Password, Clock.UtcNow.UtcDateTime,
-                    user.Claims);
+                    user.UserClaims.ConvertAll
+                    (x => new Claim(x.ClaimName, x.ClaimValue)));
             }
             return Task.CompletedTask;
         }

@@ -1,0 +1,13 @@
+﻿@page "/AccountValidateEmail/{id}/{email}"
+<h2>Paso 1 Verifica Tu Correo Electronico</h2>
+<div>
+    <label>Un Enlace fue enviado a tu correo Electronico</label>
+    <label>@Email</label>
+</div>
+
+@code {
+    [Parameter]
+    public string Id { get; set; }
+    [Parameter]
+    public string Email { get; set; }
+}

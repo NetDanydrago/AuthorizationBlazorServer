@@ -1,10 +1,23 @@
-﻿@page "/identityserver4/AccountStepTwo/{id}/{email}"
+﻿@page "/identityserver4/AccountStepTwo/{id}"
+@inject HttpClient HttpClient
 <h3>AccountStepTwo</h3>
-
+@if(User != null)
+{
+    @User.UserName
+}
 
 @code {
     [Parameter]
-    public string id { get; set; }
-    [Parameter]
-    public string Email { get; set; }
+    public string Id { get; set; }
+
+    UserViewModel User;
+
+    protected async override Task OnInitializedAsync()
+    {
+        var Response = await HttpClient.GetAsync($"api/identity/user/{Id}");
+        if (Response.IsSuccessStatusCode)
+        {
+            User = await Response.Content.ReadFromJsonAsync<UserViewModel>();
+        }
+    }
 }

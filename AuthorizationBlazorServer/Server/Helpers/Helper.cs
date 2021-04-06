@@ -1,4 +1,5 @@
-﻿using AuthorizationBlazorServer.Shared;
+﻿using AuthorizationBlazorServer.Server.Services;
+using AuthorizationBlazorServer.Shared;
 using IdentityModel;
 using IdentityServer4.Models;
 using System;
@@ -103,6 +104,21 @@ namespace AuthorizationBlazorServer.Server.Helpers
             }
             User.UserClaims = UserClaims;
             return User;        
+        }
+
+        public static UserViewModel UserToUserViewModel(User user)
+        {
+            return new UserViewModel()
+            {
+                UserName = user.UserName,
+                Email = user.UserClaims.Find
+                         (x => x.ClaimName == "email")?.ClaimValue,
+                Name = user.UserClaims.Find
+                         (x => x.ClaimName == "name")?.ClaimValue,
+                FamilyName = user.UserClaims.Find
+                         (x => x.ClaimName == "family_name")?.ClaimValue,
+                Id = user.Id,
+            };
         }
 
         public static IdentityServer4.Models.Client ViewModelToClient(ClientViewModel clientViewModel)

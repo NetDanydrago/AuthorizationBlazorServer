@@ -1,17 +1,15 @@
 ﻿using AuthorizationBlazorServer.Server.Services;
 using AuthorizationBlazorServer.Shared;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using AuthorizationBlazorServer.Server.Helpers;
 using Microsoft.AspNetCore.Authorization;
 using AuthorizationBlazorServer.Server.Policies;
 using IdentityModel;
 using IdentityServer4.Models;
+using System.Linq;
 
 namespace AuthorizationBlazorServer.Server.Controllers
 {
@@ -70,6 +68,33 @@ namespace AuthorizationBlazorServer.Server.Controllers
         #endregion
 
         #region HttpGet
+
+        [AllowAnonymous]
+        [HttpGet("ResendEmail/{id}")]
+        public ActionResult ResendEmail(string id)
+        {
+            ActionResult Result = BadRequest();
+            var User = Repository.GetUserById(id);
+            if(User != null)
+            {
+               var WasVerified  = User.UserClaims.Find
+                         (x => x.ClaimName == "email_verified").ClaimValue;
+                if (WasVerified == null)
+                {
+                    //Enviar Correo Metodo
+                    //SendEmail(User.UserName,User.Id,User.ValidationCode)
+                    Result = Ok("El correo fue renviado");
+                }
+                else if (WasVerified.Equals("true"))
+                {
+                    Result = Problem("El correo ya fue verificado");
+                }
+              
+            }
+            return Result;
+        }
+
+
         [AllowAnonymous]
         [HttpGet("VerifiedEmail")]
         public async Task<ActionResult> VerifiedEmail([FromQuery]string id,[FromQuery]string code)
@@ -78,16 +103,43 @@ namespace AuthorizationBlazorServer.Server.Controllers
             var User = Repository.GetUserById(id);
             if(User?.ValidationCode == code)
             {
-                User.IsActive = true;
-                User.ValidationCode = string.Empty;
-                var IsSuccess = await Repository.UpdateUser(User);
+                var UserClaims = new List<UserClaim>()
+                {
+                      new UserClaim(){ UserId = User.Id,
+                        ClaimName = "email_verified",
+                        ClaimValue = "true"},
+                    new UserClaim(){ UserId = User.Id,
+                        ClaimName = "email",
+                        ClaimValue = User.UserName},          
+                };
+                var IsSuccess = await Repository.AddUserClaims(UserClaims);
                 if (IsSuccess)
                 {
-                    Result = Redirect($"~/IdentityServer4/AccountStepTwo/{User.Id}/{User.UserName}");
+                    Result = Redirect($"~/IdentityServer4/AccountStepTwo/{User.Id}");
                 }
             }
             return Result;
         }
+
+        [AllowAnonymous]
+        [HttpGet("User/{id}")]
+        public ActionResult GetUser(string id)
+        {
+            ActionResult Result = NotFound();
+            var User = Repository.GetUserById(id);
+            if (User != null)
+            {
+                var WasVerified = User.UserClaims.Find
+                         (x => x.ClaimName == "email_verified").ClaimValue;
+                if (WasVerified.Equals("true"))
+                {
+                    Result = Ok(Helper.UserToUserViewModel(User));
+                }
+
+            }
+            return Result;
+        }
+
 
         [HttpGet("Users")]
         public List<UserViewModel> GetApiResouces()

@@ -20,7 +20,7 @@
                         </div>
                         <div class="form-group  col-md-12">
                             <label>Confirma tu contraseña</label>
-                            <input type="text" @bind="VerifiedPassword" class="form-control" required>
+                            <input type="password" @bind="VerifiedPassword" class="form-control" required>
                         </div>
                     </div>
                     <button class="btn btn-primary" @onclick="CreateAccount">Crear</button>
@@ -89,7 +89,7 @@
                 string Email = Regex.Replace(User.UserName, 
                                 @"(?<=[\w]{5})[\w-\._\+%]*(?=[\w]{0}@)",
                                 m => new string('*', m.Length));
-                NavigationManager.NavigateTo($"AccountValidateEmail/{Id}/{Email}");
+                NavigationManager.NavigateTo($"IdentityServer4/AccountValidateEmail/{Email}/{Id}");
             }
         }
     }

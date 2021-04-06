@@ -33,6 +33,15 @@ namespace AuthorizationBlazorServer.Server.Repository
             return Result;
         }
 
+        public async Task<bool> AddUserClaims(List<UserClaim> claims)
+        {
+            bool Result = false;
+            await Context.UserClaims.AddRangeAsync(claims);
+            Result = await Context.SaveChangesAsync() > 0;
+            return Result;
+        }
+
+
         public List<User> GetUsers()
         {
             List<User> Result = new List<User>();
@@ -43,7 +52,7 @@ namespace AuthorizationBlazorServer.Server.Repository
         public User GetUserById(string id)
         {
             return Context.Users.Where
-                (u => u.Id == id).FirstOrDefault();
+                (u => u.Id == id).Include(u => u.UserClaims).FirstOrDefault();
         }
 
         public async Task<bool> UpdateUser(User user)
